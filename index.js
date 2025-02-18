@@ -6,9 +6,22 @@ require("dotenv").config(); // Use environment variables
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
+// **Secure CORS Configuration**
+const allowedOrigins = ["https://sstalent.us/"]; // Replace with your frontend domains
+
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    }
+}));
+
 app.use(express.json());
 
+// **Ceipal API Details**
 const CEIPAL_AUTH_URL = "https://api.ceipal.com/v1/createAuthtoken/";
 const CEIPAL_JOB_URL = "https://api.ceipal.com/getCustomJobPostingDetails/Z3RkUkt2OXZJVld2MjFpOVRSTXoxZz09/b8a3f0d4a99e444dc4752c7bdc986766";
 
@@ -91,8 +104,14 @@ async function fetchAllJobs() {
     }
 }
 
-/** **Step 3: API Route to Serve Jobs** */
+/** **Step 3: API Route to Serve Jobs (Domain Restriction)** */
 app.get("/getJobs", async (req, res) => {
+    const origin = req.get("origin");
+
+    if (!allowedOrigins.includes(origin)) {
+        return res.status(403).json({ error: "Access denied" });
+    }
+
     const jobs = await fetchAllJobs();
     res.json(jobs);
 });
