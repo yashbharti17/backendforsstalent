@@ -7,7 +7,7 @@ const app = express();
 const PORT = 3000;
 
 // **Secure CORS Configuration**
-const allowedOrigins = ["https://sstalent.us/job.html"]; // Replace with your frontend domains
+const allowedOrigins = ["https://sstalent.us"]; // Replace with your frontend domains
 
 app.use(cors({
     origin: function (origin, callback) {
